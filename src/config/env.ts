@@ -31,10 +31,10 @@ export function getConfig() {
   try {
     const config = envSchema.parse(process.env);
     return config;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       console.error('❌ Error de configuración. Faltan variables de entorno o son inválidas:');
-      error.issues.forEach((e: any) => console.error(`  - ${e.message}`));
+      error.issues.forEach((e: z.ZodIssue) => console.error(`  - ${e.message}`));
       process.exit(1);
     }
     throw error;
