@@ -1,14 +1,14 @@
-import { Client } from 'pg';
+import { Pool } from 'pg';
 import { getConfig } from '../config/env.js';
 
-let pgClient: Client | null = null;
+let pgPool: Pool | null = null;
 
 /**
- * Inicializa y retorna el cliente de Postgres si DATABASE_URL está configurada.
+ * Inicializa y retorna el pool de conexiones de Postgres si DATABASE_URL está configurada.
  */
-export async function getDbClient(): Promise<Client> {
-  if (pgClient) {
-    return pgClient;
+export async function getDbPool(): Promise<Pool> {
+  if (pgPool) {
+    return pgPool;
   }
 
   const config = getConfig();
@@ -19,30 +19,32 @@ export async function getDbClient(): Promise<Client> {
     );
   }
 
-  pgClient = new Client({
+  pgPool = new Pool({
     connectionString: config.DATABASE_URL,
     // Puedes habilitar ssl si tu entorno self-hosted lo requiere forzosamente
     // ssl: { rejectUnauthorized: false }
   });
 
   try {
-    await pgClient.connect();
-    console.error('✅ Conectado exitosamente a PostgreSQL.');
-    return pgClient;
+    // Verificamos la conexión con una consulta sencilla
+    const client = await pgPool.connect();
+    client.release();
+    console.error('✅ Conectado exitosamente a PostgreSQL (Pool).');
+    return pgPool;
   } catch (error) {
-    pgClient = null;
+    pgPool = null;
     console.error('❌ Error conectando a PostgreSQL:', error);
     throw error;
   }
 }
 
 /**
- * Ejecuta una query segura usando prepared statements.
+ * Ejecuta una query segura usando el pool.
  */
 export async function query(sql: string, params: any[] = []) {
-  const client = await getDbClient();
+  const pool = await getDbPool();
   try {
-    const result = await client.query(sql, params);
+    const result = await pool.query(sql, params);
     return result.rows;
   } catch (error: any) {
     console.error('❌ Error ejecutando query:', error.message);
