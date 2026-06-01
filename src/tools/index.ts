@@ -85,6 +85,48 @@ export const toolsDefinitions = [
       properties: {},
     },
   },
+  {
+    name: 'list_files',
+    description:
+      'Lista los archivos y carpetas dentro de un bucket de almacenamiento (Storage) específico.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        bucket: {
+          type: 'string',
+          description: 'El nombre del bucket a consultar.',
+        },
+        path: {
+          type: 'string',
+          description: 'La ruta de la carpeta dentro del bucket (opcional).',
+        },
+      },
+      required: ['bucket'],
+    },
+  },
+  {
+    name: 'list_rls_policies',
+    description:
+      'Lista todas las políticas de seguridad a nivel de fila (Row Level Security - RLS) activas en la base de datos. Útil para auditar reglas de acceso.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        schema: {
+          type: 'string',
+          description: "El esquema a auditar. Por defecto 'public'.",
+        },
+      },
+    },
+  },
+  {
+    name: 'get_active_connections',
+    description:
+      'Muestra las conexiones activas actuales a la base de datos y qué consultas están ejecutando. Excelente para depurar problemas de rendimiento, bloqueos o saturación del pool de conexiones.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
 ];
 
 export async function handleGetSchema(params: any) {
@@ -260,6 +302,86 @@ export async function handleGetAdvisors() {
     return {
       isError: true,
       content: [{ type: 'text', text: `Error obteniendo alertas: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleListFiles(params: any) {
+  const supabase = getSupabaseClient();
+  const { bucket, path = '' } = params;
+
+  if (!bucket) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: "El parámetro 'bucket' es obligatorio." }],
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.storage.from(bucket).list(path);
+
+    if (error) throw error;
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error listando archivos en el bucket: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleListRlsPolicies(params: any) {
+  const schema = params?.schema || 'public';
+
+  const sql = `
+    SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
+    FROM pg_policies
+    WHERE schemaname = $1
+    ORDER BY tablename, policyname;
+  `;
+
+  try {
+    const rows = await query(sql, [schema]);
+    return {
+      content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error listando políticas RLS: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleGetActiveConnections() {
+  const sql = `
+    SELECT 
+      pid, 
+      usename as user, 
+      application_name, 
+      client_addr, 
+      backend_start, 
+      state, 
+      wait_event_type, 
+      wait_event, 
+      query
+    FROM pg_stat_activity 
+    WHERE state IS NOT NULL
+    ORDER BY backend_start DESC;
+  `;
+
+  try {
+    const rows = await query(sql);
+    return {
+      content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error obteniendo conexiones activas: ${error.message}` }],
     };
   }
 }

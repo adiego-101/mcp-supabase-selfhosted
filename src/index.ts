@@ -10,6 +10,9 @@ import {
   handleListUsers,
   handleGetSchema,
   handleGetAdvisors,
+  handleListFiles,
+  handleListRlsPolicies,
+  handleGetActiveConnections,
 } from './tools/index.js';
 
 async function main() {
@@ -53,6 +56,12 @@ async function main() {
         return await handleListUsers(params);
       case 'list_buckets':
         return await handleListBuckets();
+      case 'list_files':
+        return await handleListFiles(params);
+      case 'list_rls_policies':
+        return await handleListRlsPolicies(params);
+      case 'get_active_connections':
+        return await handleGetActiveConnections();
       default:
         throw new Error(`Tool not found: ${name}`);
     }
