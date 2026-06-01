@@ -21,19 +21,22 @@ export async function getDbPool(): Promise<Pool> {
 
   pgPool = new Pool({
     connectionString: config.DATABASE_URL,
-    // Puedes habilitar ssl si tu entorno self-hosted lo requiere forzosamente
-    // ssl: { rejectUnauthorized: false }
+    max: 10, // Límite máximo de conexiones activas para este MCP
+    idleTimeoutMillis: 30000, // Cerrar conexiones inactivas después de 30s
+    connectionTimeoutMillis: 5000, // Abortar intentos de conexión lentos
+    statement_timeout: 10000, // (10s) Abortar consultas pesadas/erróneas generadas por la IA
   });
 
   try {
     // Verificamos la conexión con una consulta sencilla
     const client = await pgPool.connect();
     client.release();
-    console.error('✅ Conectado exitosamente a PostgreSQL (Pool).');
+    console.error('✅ Conectado exitosamente a PostgreSQL (Pool con timeouts configurados).');
     return pgPool;
-  } catch (error) {
+  } catch (error: unknown) {
     pgPool = null;
-    console.error('❌ Error conectando a PostgreSQL:', error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('❌ Error conectando a PostgreSQL:', msg);
     throw error;
   }
 }
@@ -41,13 +44,14 @@ export async function getDbPool(): Promise<Pool> {
 /**
  * Ejecuta una query segura usando el pool.
  */
-export async function query(sql: string, params: any[] = []) {
+export async function query(sql: string, params: unknown[] = []) {
   const pool = await getDbPool();
   try {
     const result = await pool.query(sql, params);
     return result.rows;
-  } catch (error: any) {
-    console.error('❌ Error ejecutando query:', error.message);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('❌ Error ejecutando query:', msg);
     throw error;
   }
 }

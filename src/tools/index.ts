@@ -72,8 +72,12 @@ export const toolsDefinitions = [
       type: 'object',
       properties: {
         user_id: { type: 'string', description: 'El UUID del usuario a eliminar.' },
+        confirm: {
+          type: 'boolean',
+          description: 'Debe ser true para confirmar la eliminación destructiva.',
+        },
       },
-      required: ['user_id'],
+      required: ['user_id', 'confirm'],
     },
   },
   {
@@ -108,8 +112,12 @@ export const toolsDefinitions = [
       type: 'object',
       properties: {
         bucket: { type: 'string', description: 'Nombre del bucket a eliminar.' },
+        confirm: {
+          type: 'boolean',
+          description: 'Debe ser true para confirmar la eliminación destructiva.',
+        },
       },
-      required: ['bucket'],
+      required: ['bucket', 'confirm'],
     },
   },
   {
@@ -391,12 +399,14 @@ export async function handleCreateBucket(params: any) {
 
 export async function handleDeleteBucket(params: any) {
   const supabase = getSupabaseClient();
-  const { bucket } = params;
+  const { bucket, confirm } = params || {};
 
-  if (!bucket) {
+  if (!bucket || confirm !== true) {
     return {
       isError: true,
-      content: [{ type: 'text', text: "El parámetro 'bucket' es obligatorio." }],
+      content: [
+        { type: 'text', text: "El parámetro 'bucket' es obligatorio y 'confirm' debe ser true." },
+      ],
     };
   }
 
