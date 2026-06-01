@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mcp-server:
+    build: .
+    # El servidor usa stdio de manera predeterminada para comunicarse,
+    # pero este archivo docker-compose.yml es útil para probar o desplegar
+    # como un servicio de fondo si adaptas el transport a HTTP en el futuro.
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    stdin_open: true # Mantener stdin abierto (importante para MCP stdio)
+    tty: true
