@@ -57,7 +57,57 @@ export const toolsDefinitions = [
       properties: {},
     },
   },
+  {
+    name: 'get_schema',
+    description:
+      'Obtiene el esquema de la base de datos o de una tabla específica. Útil para entender la estructura antes de ejecutar SQL.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        table_name: {
+          type: 'string',
+          description:
+            'Nombre de la tabla para obtener sus columnas. Si se omite, devuelve una lista de todas las tablas con sus columnas.',
+        },
+        schema: {
+          type: 'string',
+          description: "El nombre del esquema (ej. 'public'). Por defecto es 'public'.",
+        },
+      },
+    },
+  },
 ];
+
+export async function handleGetSchema(params: any) {
+  const schema = params?.schema || 'public';
+  const tableName = params?.table_name;
+
+  let sql = `
+    SELECT table_name, column_name, data_type, is_nullable, column_default
+    FROM information_schema.columns
+    WHERE table_schema = $1
+  `;
+  const queryParams = [schema];
+
+  if (tableName) {
+    sql += ` AND table_name = $2`;
+    queryParams.push(tableName);
+  }
+
+  sql += ` ORDER BY table_name, ordinal_position;`;
+
+  try {
+    const rows = await query(sql, queryParams);
+    return {
+      content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error obteniendo esquema: ${error.message}` }],
+    };
+  }
+}
 
 export async function handleListTables(params: any) {
   const schema = params?.schema || 'public';

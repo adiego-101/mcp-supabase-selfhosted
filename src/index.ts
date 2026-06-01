@@ -8,6 +8,7 @@ import {
   handleListBuckets,
   handleListTables,
   handleListUsers,
+  handleGetSchema,
 } from './tools/index.js';
 
 async function main() {
@@ -39,6 +40,8 @@ async function main() {
     const { name, arguments: params } = request.params;
 
     switch (name) {
+      case 'get_schema':
+        return await handleGetSchema(params);
       case 'list_tables':
         return await handleListTables(params);
       case 'execute_sql':
@@ -46,7 +49,7 @@ async function main() {
       case 'list_users':
         return await handleListUsers(params);
       case 'list_buckets':
-        return await handleListBuckets(params);
+        return await handleListBuckets();
       default:
         throw new Error(`Tool not found: ${name}`);
     }
