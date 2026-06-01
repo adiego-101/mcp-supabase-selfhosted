@@ -14,7 +14,9 @@ export function getSupabaseClient(): SupabaseClient {
   const config = getConfig();
 
   if (!config.SUPABASE_URL || !config.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY son obligatorias para utilizar las herramientas de Auth y Storage.');
+    throw new Error(
+      'SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY son obligatorias para utilizar las herramientas de Auth y Storage.',
+    );
   }
 
   // Creamos el cliente usando la service role key.
@@ -24,9 +26,9 @@ export function getSupabaseClient(): SupabaseClient {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
-    }
+    },
   });
 
-  console.error("✅ Cliente Supabase API inicializado.");
+  console.error('✅ Cliente Supabase API inicializado.');
   return supabaseClient;
 }

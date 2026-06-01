@@ -1,33 +1,30 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { getConfig } from './config/env.js';
 import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
-import { getConfig } from "./config/env.js";
-import { 
-  toolsDefinitions, 
-  handleExecuteSql, 
-  handleListBuckets, 
-  handleListTables, 
-  handleListUsers 
-} from "./tools/index.js";
+  toolsDefinitions,
+  handleExecuteSql,
+  handleListBuckets,
+  handleListTables,
+  handleListUsers,
+} from './tools/index.js';
 
 async function main() {
   // 1. Validar la configuración al inicio
-  const config = getConfig();
-  
+  getConfig();
+
   // 2. Inicializar el servidor MCP
   const server = new Server(
     {
-      name: "supabase-selfhosted-mcp",
-      version: "1.0.0",
+      name: 'supabase-selfhosted-mcp',
+      version: '1.0.0',
     },
     {
       capabilities: {
         tools: {},
       },
-    }
+    },
   );
 
   // 3. Registrar el manejador para listar herramientas (Tools)
@@ -42,13 +39,13 @@ async function main() {
     const { name, arguments: params } = request.params;
 
     switch (name) {
-      case "list_tables":
+      case 'list_tables':
         return await handleListTables(params);
-      case "execute_sql":
+      case 'execute_sql':
         return await handleExecuteSql(params);
-      case "list_users":
+      case 'list_users':
         return await handleListUsers(params);
-      case "list_buckets":
+      case 'list_buckets':
         return await handleListBuckets(params);
       default:
         throw new Error(`Tool not found: ${name}`);
@@ -58,12 +55,11 @@ async function main() {
   // 5. Configurar el transporte stdio (entrada/salida estándar)
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  
-  console.error("🚀 Servidor MCP de Supabase Self-Hosted iniciado correctamente.");
+
+  console.error('🚀 Servidor MCP de Supabase Self-Hosted iniciado correctamente.');
 }
 
 main().catch((error) => {
-  console.error("❌ Error fatal al iniciar el servidor MCP:", error);
+  console.error('❌ Error fatal al iniciar el servidor MCP:', error);
   process.exit(1);
 });
-
