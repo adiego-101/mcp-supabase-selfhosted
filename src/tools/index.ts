@@ -76,6 +76,15 @@ export const toolsDefinitions = [
       },
     },
   },
+  {
+    name: 'get_advisors',
+    description:
+      'Obtiene alertas y recomendaciones de rendimiento y seguridad directamente de la base de datos (similar a las alertas del panel de Supabase). Analiza índices sin uso, políticas RLS faltantes y ratio de caché.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
 ];
 
 export async function handleGetSchema(params: any) {
@@ -192,6 +201,65 @@ export async function handleListBuckets() {
     return {
       isError: true,
       content: [{ type: 'text', text: `Error listando buckets: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleGetAdvisors() {
+  try {
+    // 1. Verificar tablas sin RLS (Seguridad)
+    const rlsSql = `
+      SELECT relname as table_name
+      FROM pg_class
+      JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+      WHERE nspname = 'public' AND relkind = 'r' AND relrowsecurity = false;
+    `;
+    const rlsRows = await query(rlsSql);
+
+    // 2. Verificar índices no utilizados (Rendimiento)
+    const indexesSql = `
+      SELECT schemaname, relname as table_name, indexrelname as index_name, idx_scan
+      FROM pg_stat_user_indexes
+      WHERE idx_scan = 0 AND schemaname = 'public';
+    `;
+    const unusedIndexesRows = await query(indexesSql);
+
+    // 3. Ratio de Caché (Salud General)
+    const cacheSql = `
+      SELECT 
+        sum(blks_hit)*100/sum(blks_hit+blks_read) as cache_hit_ratio
+      FROM pg_stat_database;
+    `;
+    const cacheRows = await query(cacheSql);
+
+    const report = {
+      security: {
+        issue: 'Tablas sin Row Level Security (RLS) habilitado',
+        description: 'Estas tablas están expuestas a la API anónima si no configuras RLS.',
+        tables_affected: rlsRows.map((r: any) => r.table_name),
+      },
+      performance: {
+        unused_indexes: {
+          issue: 'Índices sin uso',
+          description:
+            'Índices que ocupan espacio y ralentizan escrituras pero no se están usando en lecturas.',
+          indexes: unusedIndexesRows,
+        },
+        cache_health: {
+          issue: 'Ratio de acierto en caché',
+          description: 'Debe estar lo más cerca posible al 99%.',
+          ratio_percentage: cacheRows[0]?.cache_hit_ratio || 'N/A',
+        },
+      },
+    };
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(report, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error obteniendo alertas: ${error.message}` }],
     };
   }
 }

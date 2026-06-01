@@ -9,6 +9,7 @@ import {
   handleListTables,
   handleListUsers,
   handleGetSchema,
+  handleGetAdvisors,
 } from './tools/index.js';
 
 async function main() {
@@ -42,6 +43,8 @@ async function main() {
     switch (name) {
       case 'get_schema':
         return await handleGetSchema(params);
+      case 'get_advisors':
+        return await handleGetAdvisors();
       case 'list_tables':
         return await handleListTables(params);
       case 'execute_sql':
