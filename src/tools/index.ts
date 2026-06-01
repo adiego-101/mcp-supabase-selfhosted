@@ -49,12 +49,67 @@ export const toolsDefinitions = [
     },
   },
   {
+    name: 'create_user',
+    description:
+      'Crea un nuevo usuario en Supabase Auth. Útil para inicializar cuentas administrativas o de prueba.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', description: 'Correo electrónico del usuario.' },
+        password: { type: 'string', description: 'Contraseña del usuario (mínimo 6 caracteres).' },
+        email_confirm: {
+          type: 'boolean',
+          description: 'Si es true, autoconfirma el email (por defecto true).',
+        },
+      },
+      required: ['email', 'password'],
+    },
+  },
+  {
+    name: 'delete_user',
+    description: 'Elimina un usuario de Supabase Auth por su ID.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        user_id: { type: 'string', description: 'El UUID del usuario a eliminar.' },
+      },
+      required: ['user_id'],
+    },
+  },
+  {
     name: 'list_buckets',
     description:
       'Lista todos los buckets de almacenamiento (Storage) configurados en el proyecto de Supabase.',
     inputSchema: {
       type: 'object',
       properties: {},
+    },
+  },
+  {
+    name: 'create_bucket',
+    description: 'Crea un nuevo bucket de almacenamiento (Storage) en Supabase.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        bucket: { type: 'string', description: 'Nombre del nuevo bucket.' },
+        public: {
+          type: 'boolean',
+          description: 'Si el bucket debe ser público (por defecto false).',
+        },
+      },
+      required: ['bucket'],
+    },
+  },
+  {
+    name: 'delete_bucket',
+    description:
+      'Elimina un bucket de almacenamiento (Storage) en Supabase. El bucket debe estar vacío o fallará.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        bucket: { type: 'string', description: 'Nombre del bucket a eliminar.' },
+      },
+      required: ['bucket'],
     },
   },
   {
@@ -228,6 +283,64 @@ export async function handleListUsers(params: any) {
   }
 }
 
+export async function handleCreateUser(params: any) {
+  const supabase = getSupabaseClient();
+  const { email, password, email_confirm = true } = params;
+
+  if (!email || !password) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: "Los parámetros 'email' y 'password' son obligatorios." }],
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm,
+    });
+
+    if (error) throw error;
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error creando usuario: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleDeleteUser(params: any) {
+  const supabase = getSupabaseClient();
+  const { user_id } = params;
+
+  if (!user_id) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: "El parámetro 'user_id' es obligatorio." }],
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.auth.admin.deleteUser(user_id);
+
+    if (error) throw error;
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error eliminando usuario: ${error.message}` }],
+    };
+  }
+}
+
 export async function handleListBuckets() {
   const supabase = getSupabaseClient();
 
@@ -243,6 +356,62 @@ export async function handleListBuckets() {
     return {
       isError: true,
       content: [{ type: 'text', text: `Error listando buckets: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleCreateBucket(params: any) {
+  const supabase = getSupabaseClient();
+  const { bucket, public: isPublic = false } = params;
+
+  if (!bucket) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: "El parámetro 'bucket' es obligatorio." }],
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.storage.createBucket(bucket, {
+      public: isPublic,
+    });
+
+    if (error) throw error;
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error creando bucket: ${error.message}` }],
+    };
+  }
+}
+
+export async function handleDeleteBucket(params: any) {
+  const supabase = getSupabaseClient();
+  const { bucket } = params;
+
+  if (!bucket) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: "El parámetro 'bucket' es obligatorio." }],
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.storage.deleteBucket(bucket);
+
+    if (error) throw error;
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+    };
+  } catch (error: any) {
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Error eliminando bucket: ${error.message}` }],
     };
   }
 }

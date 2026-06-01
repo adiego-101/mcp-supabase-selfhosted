@@ -6,8 +6,12 @@ import {
   toolsDefinitions,
   handleExecuteSql,
   handleListBuckets,
+  handleCreateBucket,
+  handleDeleteBucket,
   handleListTables,
   handleListUsers,
+  handleCreateUser,
+  handleDeleteUser,
   handleGetSchema,
   handleGetAdvisors,
   handleListFiles,
@@ -54,8 +58,16 @@ async function main() {
         return await handleExecuteSql(params);
       case 'list_users':
         return await handleListUsers(params);
+      case 'create_user':
+        return await handleCreateUser(params);
+      case 'delete_user':
+        return await handleDeleteUser(params);
       case 'list_buckets':
         return await handleListBuckets();
+      case 'create_bucket':
+        return await handleCreateBucket(params);
+      case 'delete_bucket':
+        return await handleDeleteBucket(params);
       case 'list_files':
         return await handleListFiles(params);
       case 'list_rls_policies':
