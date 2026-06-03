@@ -84,10 +84,10 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error('🚀 Servidor MCP de Supabase Self-Hosted iniciado correctamente.');
+  console.error(' Servidor MCP de Supabase Self-Hosted iniciado correctamente.');
 }
 
 main().catch((error) => {
-  console.error('❌ Error fatal al iniciar el servidor MCP:', error);
+  console.error(' Error fatal al iniciar el servidor MCP:', error);
   process.exit(1);
 });

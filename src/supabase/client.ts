@@ -29,6 +29,6 @@ export function getSupabaseClient(): SupabaseClient {
     },
   });
 
-  console.error('✅ Cliente Supabase API inicializado.');
+  console.error(' Cliente Supabase API inicializado.');
   return supabaseClient;
 }

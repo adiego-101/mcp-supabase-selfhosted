@@ -31,12 +31,12 @@ export async function getDbPool(): Promise<Pool> {
     // Verificamos la conexión con una consulta sencilla
     const client = await pgPool.connect();
     client.release();
-    console.error('✅ Conectado exitosamente a PostgreSQL (Pool con timeouts configurados).');
+    console.error(' Conectado exitosamente a PostgreSQL (Pool con timeouts configurados).');
     return pgPool;
   } catch (error: unknown) {
     pgPool = null;
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('❌ Error conectando a PostgreSQL:', msg);
+    console.error(' Error conectando a PostgreSQL:', msg);
     throw error;
   }
 }
@@ -51,7 +51,7 @@ export async function query(sql: string, params: unknown[] = []) {
     return result.rows;
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('❌ Error ejecutando query:', msg);
+    console.error(' Error ejecutando query:', msg);
     throw error;
   }
 }

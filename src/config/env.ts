@@ -33,7 +33,7 @@ export function getConfig() {
     return config;
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      console.error('❌ Error de configuración. Faltan variables de entorno o son inválidas:');
+      console.error(' Error de configuración. Faltan variables de entorno o son inválidas:');
       error.issues.forEach((e: z.ZodIssue) => console.error(`  - ${e.message}`));
       process.exit(1);
     }

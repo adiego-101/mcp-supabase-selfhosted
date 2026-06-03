@@ -4,19 +4,19 @@ Un servidor [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) dis
 
 A diferencia del servidor MCP oficial que depende en gran medida de las APIs de la nube de Supabase y del `project-ref`, esta versión se conecta directamente a tu base de datos PostgreSQL local y a las APIs locales (Auth/Storage) usando tu `SUPABASE_URL` y tu `SERVICE_ROLE_KEY`.
 
-## ✨ Características
+##  Características
 
-- 📊 **Introspección de Base de Datos:** Lista tablas y esquemas de tu Postgres.
-- ⚡ **Ejecución SQL Raw:** Ejecuta consultas SQL directamente, permitiendo a la IA leer datos o modificar la estructura (bypass de RLS).
-- 🔐 **Gestión de Autenticación:** Lista usuarios registrados en tu instancia.
-- 📦 **Gestión de Storage:** Lista buckets de almacenamiento.
+-  **Introspección de Base de Datos:** Lista tablas y esquemas de tu Postgres.
+-  **Ejecución SQL Raw:** Ejecuta consultas SQL directamente, permitiendo a la IA leer datos o modificar la estructura (bypass de RLS).
+-  **Gestión de Autenticación:** Lista usuarios registrados en tu instancia.
+-  **Gestión de Storage:** Lista buckets de almacenamiento.
 
-## 🚀 Requisitos
+##  Requisitos
 
 - Node.js >= 18
 - Docker (opcional, pero recomendado)
 
-## 🛠️ Instalación y Uso (Local)
+##  Instalación y Uso (Local)
 
 1. Clona el repositorio:
    ```bash
@@ -36,7 +36,7 @@ A diferencia del servidor MCP oficial que depende en gran medida de las APIs de 
    ```
    Rellena tus credenciales (asegúrate de usar la **Service Role Key**, ¡nunca la anónima!).
 
-## 🐳 Uso con Docker (Recomendado)
+##  Uso con Docker (Recomendado)
 
 La forma más limpia de utilizar este servidor en clientes IA (Cursor, Claude, Gemini) sin ensuciar tu entorno local es usar la imagen de Docker.
 
@@ -90,13 +90,13 @@ Puedes añadirlo en tu archivo `~/.gemini/settings.json`:
 }
 ```
 
-## 🛡️ Seguridad y Buenas Prácticas
+##  Seguridad y Buenas Prácticas
 
 - **Acceso Directo:** Este MCP utiliza conexiones directas a DB y la `SERVICE_ROLE_KEY`. Esto significa que la IA conectada tendrá acceso **total y sin restricciones (bypassing RLS)** a tu instancia.
 - **Entornos:** Se recomienda encarecidamente utilizar esto **sólo en entornos de desarrollo local**, nunca apuntando a una base de datos de producción con datos reales sensibles.
 - **Transporte:** El servidor usa `stdio` (entrada/salida estándar), lo cual es el protocolo de seguridad predeterminado en aplicaciones de escritorio como Cursor y Claude.
 
-## 🤝 Contribuir
+##  Contribuir
 
 ¡Las contribuciones son bienvenidas! Sientete libre de abrir Issues o Pull Requests. Si planeas añadir una herramienta nueva, añádela en el directorio `src/tools/`.
 
