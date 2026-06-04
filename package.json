@@ -26,7 +26,15 @@
     "claude",
     "cursor"
   ],
-  "author": "Open Source Community",
+  "author": "adiego-101",
+  "homepage": "https://github.com/adiego-101/mcp-supabase-selfhosted#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adiego-101/mcp-supabase-selfhosted.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adiego-101/mcp-supabase-selfhosted/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.6.1",

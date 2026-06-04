@@ -1,0 +1,30 @@
+# Smithery configuration for automated installation
+# Reference: https://smithery.ai/docs/config
+
+name: mcp-supabase-selfhosted
+description: An open-source MCP server for self-hosted Supabase instances.
+version: 1.0.0
+author: adiego-101
+
+# How to run the server
+transport: stdio
+command: npx
+args:
+  - -y
+  - mcp-supabase-selfhosted
+
+# Required environment variables for the user to fill in the UI
+environmentVariables:
+  - name: SUPABASE_URL
+    description: The URL of your self-hosted Supabase instance (e.g., http://localhost:8000)
+    required: true
+  - name: SUPABASE_SERVICE_ROLE_KEY
+    description: Your service_role secret key for administrative access.
+    required: true
+  - name: DATABASE_URL
+    description: Direct Postgres connection string (e.g., postgresql://postgres:postgres@localhost:5432/postgres)
+    required: true
+
+# Docker configuration (Smithery can also build from source)
+docker:
+  build: .
