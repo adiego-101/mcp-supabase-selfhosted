@@ -9,7 +9,9 @@ A diferencia del servidor MCP oficial que depende en gran medida de las APIs de 
 -  **Introspección de Base de Datos:** Lista tablas y esquemas de tu Postgres.
 -  **Ejecución SQL Raw:** Ejecuta consultas SQL directamente, permitiendo a la IA leer datos o modificar la estructura (bypass de RLS).
 -  **Gestión de Autenticación:** Lista usuarios registrados en tu instancia.
--  **Gestión de Storage:** Lista buckets de almacenamiento.
+- **Gestión de Storage:** Lista buckets de almacenamiento.
+- **Recursos (Resources):** Acceso al esquema completo de la base de datos vía URI (`supabase://database/schema`).
+- **Prompts:** Plantillas de prompts integradas para auditorías de seguridad y optimización.
 
 ##  Requisitos
 
