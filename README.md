@@ -1,5 +1,7 @@
 # Supabase Self-Hosted MCP Server
 
+[![smithery badge](https://smithery.ai/badge/mcp-supabase-selfhosted)](https://smithery.ai/server/mcp-supabase-selfhosted)
+
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server designed specifically for **Self-Hosted Supabase** instances.
 
 Unlike the official Supabase MCP server which heavily relies on Supabase Cloud APIs and the `project-ref`, this version connects directly to your local PostgreSQL database and local APIs (Auth/Storage) using your `SUPABASE_URL` and `SERVICE_ROLE_KEY`.
@@ -19,63 +21,43 @@ Unlike the official Supabase MCP server which heavily relies on Supabase Cloud A
 - Node.js >= 18
 - Docker (optional, but recommended)
 
-## Installation and Usage (Local)
+## Quick Start (Recommended)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/adiego-101/mcp-supabase-selfhosted.git
-   cd mcp-supabase-selfhosted
-   ```
+The easiest way to use this server in **Claude Desktop**, **Cursor**, or **Gemini CLI** is via `npx`. No manual installation or cloning required.
 
-2. Install dependencies and build:
-   ```bash
-   npm install
-   npm run build
-   ```
-
-3. Create your environment file:
-   ```bash
-   cp .env.example .env
-   ```
-   Fill in your credentials (ensure you use the **Service Role Key**, never the anonymous one!).
-
-## Usage with Docker (Recommended)
-
-The cleanest way to use this server in AI clients (Cursor, Claude, Gemini) without cluttering your local environment is to use the Docker image.
-
-1. Build the image locally:
-   ```bash
-   docker build -t supabase-selfhosted-mcp .
-   ```
-
-### Configuration in Claude Desktop / Cursor
-Add the following to your `claude_desktop_config.json` or Cursor configuration:
+### Configuration for Claude Desktop / Cursor
+Add this to your `claude_desktop_config.json` or Cursor settings:
 
 ```json
 {
   "mcpServers": {
     "supabase-selfhosted": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e", "SUPABASE_URL=http://host.docker.internal:8000",
-        "-e", "SUPABASE_SERVICE_ROLE_KEY=your-key-here",
-        "-e", "DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres",
-        "supabase-selfhosted-mcp"
-      ]
+      "command": "npx",
+      "args": ["-y", "mcp-supabase-selfhosted"],
+      "env": {
+        "SUPABASE_URL": "http://your-ip:8000",
+        "SUPABASE_SERVICE_ROLE_KEY": "your-service-role-key",
+        "DATABASE_URL": "postgresql://postgres:postgres@your-ip:5432/postgres"
+      }
     }
   }
 }
 ```
-*(Note: use `host.docker.internal` instead of `localhost` if your database is running on your host machine).*
 
-### One-Command Usage (via npx)
-If you have the package installed or want to run it directly:
+### Installation and Usage (Local)
+
+If you prefer to clone the repository:
+...
+## Usage with Docker
+
+You can also run the server using Docker to keep your environment clean.
+...
+### One-Command Usage (CLI only)
 ```bash
+# Set your environment variables first, then run:
 npx mcp-supabase-selfhosted
 ```
+...
 
 ## Security and Best Practices
 
