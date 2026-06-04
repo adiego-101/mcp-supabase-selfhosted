@@ -9,12 +9,12 @@ By participating in this project, you are expected to uphold our Code of Conduct
 ## How Can I Contribute?
 
 ### Reporting Bugs
-- Use the [GitHub Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md).
+- Use the [GitHub Bug Report template](.github/ISSUE_TEMPLATE/bug_report.yml).
 - Provide a clear and descriptive title.
 - Describe the exact steps which reproduce the problem.
 
 ### Suggesting Enhancements
-- Use the [GitHub Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md).
+- Use the [GitHub Feature Request template](.github/ISSUE_TEMPLATE/feature_request.yml).
 - Explain why this enhancement would be useful to most users.
 
 ### Pull Requests

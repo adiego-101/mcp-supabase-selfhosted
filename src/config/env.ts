@@ -7,12 +7,9 @@ dotenv.config();
 // Esquema de validación para las variables de entorno
 const envSchema = z
   .object({
-    SUPABASE_URL: z.string().url('La URL de Supabase debe ser válida').optional(),
+    SUPABASE_URL: z.string().url('Supabase URL must be a valid URL').optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
-    DATABASE_URL: z
-      .string()
-      .url('La URL de la base de datos (Postgres) debe ser válida')
-      .optional(),
+    DATABASE_URL: z.string().url('Database URL (Postgres) must be a valid URL').optional(),
   })
   .refine(
     (data) => {
@@ -23,7 +20,7 @@ const envSchema = z
     },
     {
       message:
-        'Debes configurar al menos DATABASE_URL o (SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY)',
+        'You must configure at least DATABASE_URL or (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY)',
     },
   );
 
@@ -33,7 +30,7 @@ export function getConfig() {
     return config;
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      console.error(' Error de configuración. Faltan variables de entorno o son inválidas:');
+      console.error(' Configuration error. Environment variables are missing or invalid:');
       error.issues.forEach((e: z.ZodIssue) => console.error(`  - ${e.message}`));
       process.exit(1);
     }

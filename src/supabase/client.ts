@@ -15,13 +15,13 @@ export function getSupabaseClient(): SupabaseClient {
 
   if (!config.SUPABASE_URL || !config.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error(
-      'SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY son obligatorias para utilizar las herramientas de Auth y Storage.',
+      'SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required to use Auth and Storage tools.',
     );
   }
 
-  // Creamos el cliente usando la service role key.
-  // IMPORTANTE: En el contexto de un MCP (que actúa como un super admin), es seguro
-  // y necesario usar la service role key, pero el usuario debe estar consciente de esto.
+  // Create client using the service role key.
+  // IMPORTANT: In an MCP context (acting as super admin), it is safe
+  // and necessary to use the service role key, but the user should be aware of this.
   supabaseClient = createClient(config.SUPABASE_URL, config.SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
       autoRefreshToken: false,
@@ -29,6 +29,6 @@ export function getSupabaseClient(): SupabaseClient {
     },
   });
 
-  console.error(' Cliente Supabase API inicializado.');
+  console.error(' Supabase API client initialized.');
   return supabaseClient;
 }

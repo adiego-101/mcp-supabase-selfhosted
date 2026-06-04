@@ -9,11 +9,11 @@ This skill guides the agent on how to correctly and safely utilize the `supabase
 
 ## 1. When to Use
 Activate this skill whenever the user asks to:
-- "Configurar un usuario de prueba en auth."
-- "Crear un bucket para mis imágenes."
-- "Revisar las políticas de seguridad RLS."
-- "Corregir problemas de rendimiento de la base de datos."
-- "Ver qué columnas tiene una tabla en mi Supabase."
+- "Setup a test user in auth."
+- "Create a bucket for my images."
+- "Review RLS security policies."
+- "Fix database performance issues."
+- "See what columns a table has in my Supabase."
 
 ## 2. Security and RLS (Row Level Security) Mandates
 **Critical:** Because this MCP uses the `SUPABASE_SERVICE_ROLE_KEY` and direct PostgreSQL connections, **it bypasses Row Level Security (RLS) entirely.**
@@ -25,17 +25,18 @@ Activate this skill whenever the user asks to:
 
 ### A. Exploring the Database
 1. Run `list_tables` to see what exists.
-2. Run `get_schema({ table_name: "X" })` to understand the columns before writing any SQL.
-3. Run `get_advisors()` to check if there are missing indexes or security gaps.
+2. Run `get_schema({ table_name: "X" })` to understand columns before writing any SQL.
+3. Run `get_advisors()` to check for missing indexes or security gaps.
+4. Access the source of truth schema via the resource `supabase://database/schema`.
 
 ### B. Configuring Auth
 1. Use `list_users` to see who is registered.
-2. Use `create_user({ email, password, email_confirm: true })` to bootstrap administrative or test accounts without needing an email SMTP server configured locally.
-3. If asked to clean up, use `delete_user({ user_id })`.
+2. Use `create_user({ email, password, email_confirm: true })` to bootstrap administrative or test accounts without needing an SMTP server configured locally.
+3. If asked to clean up, use `delete_user({ user_id, confirm: true })`.
 
 ### C. Configuring Storage (Buckets)
 1. Use `list_buckets()` to check existing buckets.
-2. Use `create_bucket({ bucket: "name", public: true/false })` to make a new one. Remember: making a bucket public allows read access without auth, but RLS policies are still recommended via `storage.objects` table.
+2. Use `create_bucket({ bucket: "name", public: true/false })` to make a new one. Remember: making a bucket public allows read access without auth, but RLS policies are still recommended via the `storage.objects` table.
 3. Use `list_files({ bucket: "name" })` to verify uploads.
 
 ### D. Debugging and Infrastructure

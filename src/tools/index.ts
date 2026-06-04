@@ -4,13 +4,13 @@ import { getSupabaseClient } from '../supabase/client.js';
 export const toolsDefinitions = [
   {
     name: 'list_tables',
-    description: 'Lista todas las tablas en un esquema específico de la base de datos PostgreSQL.',
+    description: 'List all tables in a specific PostgreSQL database schema.',
     inputSchema: {
       type: 'object',
       properties: {
         schema: {
           type: 'string',
-          description: "El nombre del esquema (ej. 'public', 'auth'). Por defecto es 'public'.",
+          description: "The name of the schema (e.g. 'public', 'auth'). Defaults to 'public'.",
         },
       },
     },
@@ -18,13 +18,13 @@ export const toolsDefinitions = [
   {
     name: 'execute_sql',
     description:
-      'Ejecuta una consulta SQL cruda en la base de datos PostgreSQL de Supabase. Útil para leer datos, modificar esquemas o administrar la base de datos. ATENCIÓN: Esta herramienta tiene acceso directo, sin pasar por RLS.',
+      'Execute a raw SQL query on the Supabase PostgreSQL database. Useful for reading data, modifying schemas, or managing the database. WARNING: This tool has direct access, bypassing RLS.',
     inputSchema: {
       type: 'object',
       properties: {
         sql: {
           type: 'string',
-          description: 'La consulta SQL a ejecutar.',
+          description: 'The SQL query to execute.',
         },
       },
       required: ['sql'],
@@ -33,17 +33,17 @@ export const toolsDefinitions = [
   {
     name: 'list_users',
     description:
-      'Lista los usuarios registrados en el servicio de Autenticación de Supabase (auth.users). Devuelve información básica de los usuarios.',
+      'List users registered in the Supabase Authentication service (auth.users). Returns basic user information.',
     inputSchema: {
       type: 'object',
       properties: {
         page: {
           type: 'number',
-          description: 'El número de página para paginación (por defecto 1).',
+          description: 'The page number for pagination (defaults to 1).',
         },
         perPage: {
           type: 'number',
-          description: 'La cantidad de usuarios por página (por defecto 50).',
+          description: 'The amount of users per page (defaults to 50).',
         },
       },
     },
@@ -51,15 +51,15 @@ export const toolsDefinitions = [
   {
     name: 'create_user',
     description:
-      'Crea un nuevo usuario en Supabase Auth. Útil para inicializar cuentas administrativas o de prueba.',
+      'Create a new user in Supabase Auth. Useful for initializing administrative or test accounts.',
     inputSchema: {
       type: 'object',
       properties: {
-        email: { type: 'string', description: 'Correo electrónico del usuario.' },
-        password: { type: 'string', description: 'Contraseña del usuario (mínimo 6 caracteres).' },
+        email: { type: 'string', description: 'User email address.' },
+        password: { type: 'string', description: 'User password (minimum 6 characters).' },
         email_confirm: {
           type: 'boolean',
-          description: 'Si es true, autoconfirma el email (por defecto true).',
+          description: 'If true, auto-confirms the email (defaults to true).',
         },
       },
       required: ['email', 'password'],
@@ -67,14 +67,14 @@ export const toolsDefinitions = [
   },
   {
     name: 'delete_user',
-    description: 'Elimina un usuario de Supabase Auth por su ID.',
+    description: 'Delete a Supabase Auth user by their ID.',
     inputSchema: {
       type: 'object',
       properties: {
-        user_id: { type: 'string', description: 'El UUID del usuario a eliminar.' },
+        user_id: { type: 'string', description: 'The UUID of the user to delete.' },
         confirm: {
           type: 'boolean',
-          description: 'Debe ser true para confirmar la eliminación destructiva.',
+          description: 'Must be true to confirm the destructive deletion.',
         },
       },
       required: ['user_id', 'confirm'],
@@ -82,8 +82,7 @@ export const toolsDefinitions = [
   },
   {
     name: 'list_buckets',
-    description:
-      'Lista todos los buckets de almacenamiento (Storage) configurados en el proyecto de Supabase.',
+    description: 'List all storage buckets configured in the Supabase project.',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -91,14 +90,14 @@ export const toolsDefinitions = [
   },
   {
     name: 'create_bucket',
-    description: 'Crea un nuevo bucket de almacenamiento (Storage) en Supabase.',
+    description: 'Create a new storage bucket in Supabase.',
     inputSchema: {
       type: 'object',
       properties: {
-        bucket: { type: 'string', description: 'Nombre del nuevo bucket.' },
+        bucket: { type: 'string', description: 'Name of the new bucket.' },
         public: {
           type: 'boolean',
-          description: 'Si el bucket debe ser público (por defecto false).',
+          description: 'Whether the bucket should be public (defaults to false).',
         },
       },
       required: ['bucket'],
@@ -106,15 +105,14 @@ export const toolsDefinitions = [
   },
   {
     name: 'delete_bucket',
-    description:
-      'Elimina un bucket de almacenamiento (Storage) en Supabase. El bucket debe estar vacío o fallará.',
+    description: 'Delete a storage bucket in Supabase. The bucket must be empty or it will fail.',
     inputSchema: {
       type: 'object',
       properties: {
-        bucket: { type: 'string', description: 'Nombre del bucket a eliminar.' },
+        bucket: { type: 'string', description: 'Name of the bucket to delete.' },
         confirm: {
           type: 'boolean',
-          description: 'Debe ser true para confirmar la eliminación destructiva.',
+          description: 'Must be true to confirm the destructive deletion.',
         },
       },
       required: ['bucket', 'confirm'],
@@ -123,18 +121,18 @@ export const toolsDefinitions = [
   {
     name: 'get_schema',
     description:
-      'Obtiene el esquema de la base de datos o de una tabla específica. Útil para entender la estructura antes de ejecutar SQL.',
+      'Retrieve the database schema or a specific table structure. Useful for understanding columns before executing SQL.',
     inputSchema: {
       type: 'object',
       properties: {
         table_name: {
           type: 'string',
           description:
-            'Nombre de la tabla para obtener sus columnas. Si se omite, devuelve una lista de todas las tablas con sus columnas.',
+            'Table name to get columns for. If omitted, returns all tables with their columns.',
         },
         schema: {
           type: 'string',
-          description: "El nombre del esquema (ej. 'public'). Por defecto es 'public'.",
+          description: "The name of the schema (e.g. 'public'). Defaults to 'public'.",
         },
       },
     },
@@ -142,7 +140,7 @@ export const toolsDefinitions = [
   {
     name: 'get_advisors',
     description:
-      'Obtiene alertas y recomendaciones de rendimiento y seguridad directamente de la base de datos (similar a las alertas del panel de Supabase). Analiza índices sin uso, políticas RLS faltantes y ratio de caché.',
+      'Get performance and security alerts/recommendations directly from the database (similar to Supabase dashboard alerts). Analyzes unused indexes, missing RLS policies, and cache hit ratio.',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -150,18 +148,17 @@ export const toolsDefinitions = [
   },
   {
     name: 'list_files',
-    description:
-      'Lista los archivos y carpetas dentro de un bucket de almacenamiento (Storage) específico.',
+    description: 'List files and folders within a specific storage bucket.',
     inputSchema: {
       type: 'object',
       properties: {
         bucket: {
           type: 'string',
-          description: 'El nombre del bucket a consultar.',
+          description: 'The name of the bucket to query.',
         },
         path: {
           type: 'string',
-          description: 'La ruta de la carpeta dentro del bucket (opcional).',
+          description: 'The folder path within the bucket (optional).',
         },
       },
       required: ['bucket'],
@@ -170,13 +167,13 @@ export const toolsDefinitions = [
   {
     name: 'list_rls_policies',
     description:
-      'Lista todas las políticas de seguridad a nivel de fila (Row Level Security - RLS) activas en la base de datos. Útil para auditar reglas de acceso.',
+      'List all Row Level Security (RLS) policies active in the database. Useful for auditing access rules.',
     inputSchema: {
       type: 'object',
       properties: {
         schema: {
           type: 'string',
-          description: "El esquema a auditar. Por defecto 'public'.",
+          description: "The schema to audit. Defaults to 'public'.",
         },
       },
     },
@@ -184,7 +181,7 @@ export const toolsDefinitions = [
   {
     name: 'get_active_connections',
     description:
-      'Muestra las conexiones activas actuales a la base de datos y qué consultas están ejecutando. Excelente para depurar problemas de rendimiento, bloqueos o saturación del pool de conexiones.',
+      'Show current active database connections and their running queries. Excellent for debugging performance issues, locks, or connection pool saturation.',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -218,7 +215,7 @@ export async function handleGetSchema(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error obteniendo esquema: ${error.message}` }],
+      content: [{ type: 'text', text: `Error retrieving schema: ${error.message}` }],
     };
   }
 }
@@ -240,7 +237,7 @@ export async function handleListTables(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error listando tablas: ${error.message}` }],
+      content: [{ type: 'text', text: `Error listing tables: ${error.message}` }],
     };
   }
 }
@@ -250,7 +247,7 @@ export async function handleExecuteSql(params: any) {
   if (!sql) {
     return {
       isError: true,
-      content: [{ type: 'text', text: "El parámetro 'sql' es obligatorio." }],
+      content: [{ type: 'text', text: "The 'sql' parameter is required." }],
     };
   }
 
@@ -262,7 +259,7 @@ export async function handleExecuteSql(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error ejecutando SQL: ${error.message}` }],
+      content: [{ type: 'text', text: `Error executing SQL: ${error.message}` }],
     };
   }
 }
@@ -286,7 +283,7 @@ export async function handleListUsers(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error listando usuarios: ${error.message}` }],
+      content: [{ type: 'text', text: `Error listing users: ${error.message}` }],
     };
   }
 }
@@ -298,7 +295,7 @@ export async function handleCreateUser(params: any) {
   if (!email || !password) {
     return {
       isError: true,
-      content: [{ type: 'text', text: "Los parámetros 'email' y 'password' son obligatorios." }],
+      content: [{ type: 'text', text: "Both 'email' and 'password' parameters are required." }],
     };
   }
 
@@ -317,7 +314,7 @@ export async function handleCreateUser(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error creando usuario: ${error.message}` }],
+      content: [{ type: 'text', text: `Error creating user: ${error.message}` }],
     };
   }
 }
@@ -344,7 +341,7 @@ export async function handleDeleteUser(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error eliminando usuario: ${error.message}` }],
+      content: [{ type: 'text', text: `Error deleting user: ${error.message}` }],
     };
   }
 }
@@ -363,7 +360,7 @@ export async function handleListBuckets() {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error listando buckets: ${error.message}` }],
+      content: [{ type: 'text', text: `Error listing buckets: ${error.message}` }],
     };
   }
 }
@@ -375,7 +372,7 @@ export async function handleCreateBucket(params: any) {
   if (!bucket) {
     return {
       isError: true,
-      content: [{ type: 'text', text: "El parámetro 'bucket' es obligatorio." }],
+      content: [{ type: 'text', text: "The 'bucket' parameter is required." }],
     };
   }
 
@@ -392,7 +389,7 @@ export async function handleCreateBucket(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error creando bucket: ${error.message}` }],
+      content: [{ type: 'text', text: `Error creating bucket: ${error.message}` }],
     };
   }
 }
@@ -405,7 +402,7 @@ export async function handleDeleteBucket(params: any) {
     return {
       isError: true,
       content: [
-        { type: 'text', text: "El parámetro 'bucket' es obligatorio y 'confirm' debe ser true." },
+        { type: 'text', text: "The 'bucket' parameter is required and 'confirm' must be true." },
       ],
     };
   }
@@ -421,7 +418,7 @@ export async function handleDeleteBucket(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error eliminando bucket: ${error.message}` }],
+      content: [{ type: 'text', text: `Error deleting bucket: ${error.message}` }],
     };
   }
 }
@@ -455,20 +452,20 @@ export async function handleGetAdvisors() {
 
     const report = {
       security: {
-        issue: 'Tablas sin Row Level Security (RLS) habilitado',
-        description: 'Estas tablas están expuestas a la API anónima si no configuras RLS.',
+        issue: 'Tables without Row Level Security (RLS) enabled',
+        description: 'These tables are exposed to the anonymous API if RLS is not configured.',
         tables_affected: rlsRows.map((r: any) => r.table_name),
       },
       performance: {
         unused_indexes: {
-          issue: 'Índices sin uso',
+          issue: 'Unused indexes',
           description:
-            'Índices que ocupan espacio y ralentizan escrituras pero no se están usando en lecturas.',
+            'Indexes that occupy space and slow down writes but are not being used in reads.',
           indexes: unusedIndexesRows,
         },
         cache_health: {
-          issue: 'Ratio de acierto en caché',
-          description: 'Debe estar lo más cerca posible al 99%.',
+          issue: 'Cache hit ratio',
+          description: 'Should be as close to 99% as possible.',
           ratio_percentage: cacheRows[0]?.cache_hit_ratio || 'N/A',
         },
       },
@@ -480,7 +477,7 @@ export async function handleGetAdvisors() {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error obteniendo alertas: ${error.message}` }],
+      content: [{ type: 'text', text: `Error retrieving alerts: ${error.message}` }],
     };
   }
 }
@@ -492,7 +489,7 @@ export async function handleListFiles(params: any) {
   if (!bucket) {
     return {
       isError: true,
-      content: [{ type: 'text', text: "El parámetro 'bucket' es obligatorio." }],
+      content: [{ type: 'text', text: "The 'bucket' parameter is required." }],
     };
   }
 
@@ -507,7 +504,7 @@ export async function handleListFiles(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error listando archivos en el bucket: ${error.message}` }],
+      content: [{ type: 'text', text: `Error listing files in bucket: ${error.message}` }],
     };
   }
 }
@@ -530,7 +527,7 @@ export async function handleListRlsPolicies(params: any) {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error listando políticas RLS: ${error.message}` }],
+      content: [{ type: 'text', text: `Error listing RLS policies: ${error.message}` }],
     };
   }
 }
@@ -560,7 +557,7 @@ export async function handleGetActiveConnections() {
   } catch (error: any) {
     return {
       isError: true,
-      content: [{ type: 'text', text: `Error obteniendo conexiones activas: ${error.message}` }],
+      content: [{ type: 'text', text: `Error retrieving active connections: ${error.message}` }],
     };
   }
 }

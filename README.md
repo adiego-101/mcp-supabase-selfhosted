@@ -1,54 +1,55 @@
 # Supabase Self-Hosted MCP Server
 
-Un servidor [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) diseñado específicamente para instancias **Self-Hosted de Supabase**. 
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server designed specifically for **Self-Hosted Supabase** instances.
 
-A diferencia del servidor MCP oficial que depende en gran medida de las APIs de la nube de Supabase y del `project-ref`, esta versión se conecta directamente a tu base de datos PostgreSQL local y a las APIs locales (Auth/Storage) usando tu `SUPABASE_URL` y tu `SERVICE_ROLE_KEY`.
+Unlike the official Supabase MCP server which heavily relies on Supabase Cloud APIs and the `project-ref`, this version connects directly to your local PostgreSQL database and local APIs (Auth/Storage) using your `SUPABASE_URL` and `SERVICE_ROLE_KEY`.
 
-##  Características
+## Features
 
--  **Introspección de Base de Datos:** Lista tablas y esquemas de tu Postgres.
--  **Ejecución SQL Raw:** Ejecuta consultas SQL directamente, permitiendo a la IA leer datos o modificar la estructura (bypass de RLS).
--  **Gestión de Autenticación:** Lista usuarios registrados en tu instancia.
-- **Gestión de Storage:** Lista buckets de almacenamiento.
-- **Recursos (Resources):** Acceso al esquema completo de la base de datos vía URI (`supabase://database/schema`).
-- **Prompts:** Plantillas de prompts integradas para auditorías de seguridad y optimización.
+- **Database Introspection:** List tables and schemas in your Postgres database.
+- **Raw SQL Execution:** Execute SQL queries directly, allowing the AI to read data or modify the structure (bypassing RLS).
+- **Authentication Management:** List and manage users registered in your instance.
+- **Storage Management:** List buckets and files.
+- **Resources:** Access the complete database schema via URI (`supabase://database/schema`).
+- **Prompts:** Integrated prompt templates for security audits and optimization.
+- **Infrastructure Diagnostics:** Monitor active connections and get performance advisors (unused indexes, cache health).
 
-##  Requisitos
+## Requirements
 
 - Node.js >= 18
-- Docker (opcional, pero recomendado)
+- Docker (optional, but recommended)
 
-##  Instalación y Uso (Local)
+## Installation and Usage (Local)
 
-1. Clona el repositorio:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/tu-usuario/mcp-supabase-selfhosted.git
+   git clone https://github.com/adiego-101/mcp-supabase-selfhosted.git
    cd mcp-supabase-selfhosted
    ```
 
-2. Instala las dependencias y compila:
+2. Install dependencies and build:
    ```bash
    npm install
    npm run build
    ```
 
-3. Crea tu archivo de entorno:
+3. Create your environment file:
    ```bash
    cp .env.example .env
    ```
-   Rellena tus credenciales (asegúrate de usar la **Service Role Key**, ¡nunca la anónima!).
+   Fill in your credentials (ensure you use the **Service Role Key**, never the anonymous one!).
 
-##  Uso con Docker (Recomendado)
+## Usage with Docker (Recommended)
 
-La forma más limpia de utilizar este servidor en clientes IA (Cursor, Claude, Gemini) sin ensuciar tu entorno local es usar la imagen de Docker.
+The cleanest way to use this server in AI clients (Cursor, Claude, Gemini) without cluttering your local environment is to use the Docker image.
 
-1. Construye la imagen localmente:
+1. Build the image locally:
    ```bash
    docker build -t supabase-selfhosted-mcp .
    ```
 
-### Configuración en Claude Desktop / Cursor
-Añade lo siguiente a tu archivo `claude_desktop_config.json` o configuración de Cursor:
+### Configuration in Claude Desktop / Cursor
+Add the following to your `claude_desktop_config.json` or Cursor configuration:
 
 ```json
 {
@@ -60,7 +61,7 @@ Añade lo siguiente a tu archivo `claude_desktop_config.json` o configuración d
         "-i",
         "--rm",
         "-e", "SUPABASE_URL=http://host.docker.internal:8000",
-        "-e", "SUPABASE_SERVICE_ROLE_KEY=tu-clave-aqui",
+        "-e", "SUPABASE_SERVICE_ROLE_KEY=your-key-here",
         "-e", "DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres",
         "supabase-selfhosted-mcp"
       ]
@@ -68,39 +69,24 @@ Añade lo siguiente a tu archivo `claude_desktop_config.json` o configuración d
   }
 }
 ```
-*(Nota: usa `host.docker.internal` en lugar de `localhost` si tu base de datos corre en tu máquina host).*
+*(Note: use `host.docker.internal` instead of `localhost` if your database is running on your host machine).*
 
-### Configuración en Gemini CLI
-Puedes añadirlo en tu archivo `~/.gemini/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "supabase-selfhosted": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e", "SUPABASE_URL=...",
-        "-e", "SUPABASE_SERVICE_ROLE_KEY=...",
-        "-e", "DATABASE_URL=...",
-        "supabase-selfhosted-mcp"
-      ]
-    }
-  }
-}
+### One-Command Usage (via npx)
+If you have the package installed or want to run it directly:
+```bash
+npx mcp-supabase-selfhosted
 ```
 
-##  Seguridad y Buenas Prácticas
+## Security and Best Practices
 
-- **Acceso Directo:** Este MCP utiliza conexiones directas a DB y la `SERVICE_ROLE_KEY`. Esto significa que la IA conectada tendrá acceso **total y sin restricciones (bypassing RLS)** a tu instancia.
-- **Entornos:** Se recomienda encarecidamente utilizar esto **sólo en entornos de desarrollo local**, nunca apuntando a una base de datos de producción con datos reales sensibles.
-- **Transporte:** El servidor usa `stdio` (entrada/salida estándar), lo cual es el protocolo de seguridad predeterminado en aplicaciones de escritorio como Cursor y Claude.
+- **Direct Access:** This MCP uses direct DB connections and the `SERVICE_ROLE_KEY`. This means the connected AI will have **full, unrestricted access (bypassing RLS)** to your instance.
+- **Environments:** It is strongly recommended to use this **only in local development environments**, never pointing to a production database with sensitive real data.
+- **Transport:** The server uses `stdio` (standard input/output), which is the default security protocol in desktop applications like Cursor and Claude.
+- **Destructive Actions:** Tools like `delete_user` or `delete_bucket` require an explicit `confirm: true` flag to prevent accidental data loss.
 
-##  Contribuir
+## Contributing
 
-¡Las contribuciones son bienvenidas! Sientete libre de abrir Issues o Pull Requests. Si planeas añadir una herramienta nueva, añádela en el directorio `src/tools/`.
+Contributions are welcome! Feel free to open Issues or Pull Requests. If you plan to add a new tool, add it to the `src/tools/` directory.
 
-## Licencia
+## License
 MIT

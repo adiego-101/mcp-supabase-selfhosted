@@ -53,8 +53,8 @@ async function main() {
       resources: [
         {
           uri: 'supabase://database/schema',
-          name: 'Esquema completo de la base de datos',
-          description: 'Devuelve la estructura de todas las tablas y columnas del esquema public.',
+          name: 'Complete database schema',
+          description: 'Returns the structure of all tables and columns in the public schema.',
           mimeType: 'application/json',
         },
       ],
@@ -89,7 +89,7 @@ async function main() {
       prompts: [
         {
           name: 'audit-security',
-          description: 'Realiza una auditoría de seguridad completa de la instancia de Supabase.',
+          description: 'Performs a complete security audit of the Supabase instance.',
         },
       ],
     };
@@ -98,13 +98,13 @@ async function main() {
   server.setRequestHandler(GetPromptRequestSchema, async (request) => {
     if (request.params.name === 'audit-security') {
       return {
-        description: 'Auditoría de seguridad de Supabase',
+        description: 'Supabase Security Audit',
         messages: [
           {
             role: 'user',
             content: {
               type: 'text',
-              text: 'Por favor, realiza los siguientes pasos para auditar mi instancia:\n1. Usa get_advisors para detectar problemas de rendimiento y RLS.\n2. Usa list_rls_policies para revisar todas las reglas de acceso activas.\n3. Usa get_active_connections para ver si hay accesos sospechosos o bloqueos.\n4. Finalmente, entrégame un reporte detallado con recomendaciones de seguridad.',
+              text: 'Please perform the following steps to audit my instance:\n1. Use get_advisors to detect performance and RLS issues.\n2. Use list_rls_policies to review all active access rules.\n3. Use get_active_connections to see if there are suspicious accesses or blocks.\n4. Finally, provide a detailed report with security recommendations.',
             },
           },
         ],
@@ -160,10 +160,10 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error(' Servidor MCP de Supabase Self-Hosted iniciado correctamente.');
+  console.error(' Supabase Self-Hosted MCP Server started successfully.');
 }
 
 main().catch((error) => {
-  console.error(' Error fatal al iniciar el servidor MCP:', error);
+  console.error(' Fatal error starting MCP server:', error);
   process.exit(1);
 });
