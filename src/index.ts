@@ -36,16 +36,31 @@ async function main() {
   const server = new Server(
     {
       name: 'supabase-selfhosted-mcp',
-      version: '1.0.0',
+      version: '1.2.0',
     },
     {
       capabilities: {
         tools: {},
-        resources: {},
+        resources: {
+          subscribe: true,
+          listChanged: true,
+        },
         prompts: {},
+        logging: {},
       },
     },
   );
+
+  /**
+   * Helper to send log messages to the client.
+   */
+  const log = (message: string, level: 'info' | 'error' | 'debug' = 'info') => {
+    server.sendLoggingMessage({
+      level,
+      data: message,
+    });
+    console.error(`[${level.toUpperCase()}] ${message}`);
+  };
 
   // --- RECURSOS (Resources) ---
   server.setRequestHandler(ListResourcesRequestSchema, async () => {
@@ -58,11 +73,21 @@ async function main() {
           mimeType: 'application/json',
         },
       ],
+      resourceTemplates: [
+        {
+          uriTemplate: 'supabase://database/table/{name}',
+          name: 'Table specific schema',
+          description: 'Returns the schema for a specific table.',
+          mimeType: 'application/json',
+        },
+      ],
     };
   });
 
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-    if (request.params.uri === 'supabase://database/schema') {
+    const { uri } = request.params;
+
+    if (uri === 'supabase://database/schema') {
       const sql = `
         SELECT table_name, column_name, data_type 
         FROM information_schema.columns 
@@ -73,13 +98,36 @@ async function main() {
       return {
         contents: [
           {
-            uri: request.params.uri,
+            uri,
             mimeType: 'application/json',
             text: JSON.stringify(rows, null, 2),
           },
         ],
       };
     }
+
+    // Handle Resource Templates (Specific Table)
+    const tableMatch = uri.match(/^supabase:\/\/database\/table\/(.+)$/);
+    if (tableMatch) {
+      const tableName = tableMatch[1];
+      const sql = `
+        SELECT column_name, data_type, is_nullable, column_default
+        FROM information_schema.columns 
+        WHERE table_schema = 'public' AND table_name = $1
+        ORDER BY ordinal_position;
+      `;
+      const rows = await query(sql, [tableName]);
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: 'application/json',
+            text: JSON.stringify(rows, null, 2),
+          },
+        ],
+      };
+    }
+
     throw new Error('Resource not found');
   });
 
@@ -160,10 +208,10 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error(' Supabase Self-Hosted MCP Server started successfully.');
+  log('Supabase Self-Hosted MCP Server started successfully.', 'info');
 }
 
 main().catch((error) => {
-  console.error(' Fatal error starting MCP server:', error);
+  console.error('Fatal error starting MCP server:', error);
   process.exit(1);
 });
