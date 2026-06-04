@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "mcp-supabase-selfhosted": "./dist/index.js"
+    "mcp-supabase-selfhosted": "dist/index.js"
   },
   "scripts": {
     "test": "tsx --test tests/tools.test.ts",
